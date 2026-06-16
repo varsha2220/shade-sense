@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Shade Sense</title>
+
+<div id="loadingScreen" style="
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:white;
+    z-index:999;
+    text-align:center;
+    padding-top:150px;
+">
+
+    <h2>Analyzing your skin... 💄</h2>
+
+    <div style="margin-top:30px;">
+
+        <img src="{{ url_for('static', filename='images/foundation.png') }}" width="50">
+        <img src="{{ url_for('static', filename='images/concealer.jpeg') }}" width="50">
+        <img src="{{ url_for('static', filename='images/blush.webp') }}" width="50">
+        <img src="{{ url_for('static', filename='images/lipstick.png') }}" width="50">
+
+    </div>
+
+    <p style="margin-top:20px;">Finding your perfect match...</p>
+
+</div>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    background: linear-gradient(to right, #ffd6e0, #ffe6eb);
+}
+
+#loadingScreen img {
+    animation: bounce 1s infinite alternate;
+}
+
+@keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-15px); }
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+}
+
+h1 {
+    color: #333;
+}
+
+.brand-box {
+    display:inline-block;
+    padding:10px;
+    margin:8px;
+    background:#ffe6eb;
+    border-radius:8px;
+}
+
+.category-box {
+    display: inline-block;
+    background: rgb(223, 157, 157);
+    padding: 15px;
+    margin: 10px;
+    border-radius: 12px;
+    width: 120px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.category-box:hover {
+    transform: scale(1.05);
+}
+
+.category-box img {
+    width: 60px;
+    height: 60px;
+}
+
+button {
+    background: #ff6f91;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+video {
+    border-radius: 10px;
+}
+
+#lightingStatus {
+    font-weight: bold;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>💄 Shade Sense</h1>
+<p>Find your perfect makeup shade instantly</p>
+
+<div style="margin:20px;">
+    <div style="display:inline-block;width:40px;height:40px;background:#f1c27d;border-radius:5px;"></div>
+    <div style="display:inline-block;width:40px;height:40px;background:#e0ac69;border-radius:5px;"></div>
+    <div style="display:inline-block;width:40px;height:40px;background:#c68642;border-radius:5px;"></div>
+    <div style="display:inline-block;width:40px;height:40px;background:#8d5524;border-radius:5px;"></div>
+    <div style="display:inline-block;width:40px;height:40px;background:#5d3a1a;border-radius:5px;"></div>
+</div>
+
+<!-- CATEGORY BOXES -->
+
+<h3 style="text-transform: uppercase;">
+    {{ category }}
+</h3>
+
+<div>
+
+<div class="category-box">
+<img src="{{ url_for('static', filename='images/foundation.png') }}">
+<p>Foundation</p>
+<button onclick="openBrandPopup('foundation')">Brands</button>
+</div>
+
+<div class="category-box">
+<img src="{{ url_for('static', filename='images/concealer.jpeg') }}">
+<p>Concealer</p>
+<button onclick="openBrandPopup('concealer')">Brands</button>
+</div>
+
+<div class="category-box">
+<img src="{{ url_for('static', filename='images/blush.webp') }}">
+<p>Blush</p>
+<button onclick="openBrandPopup('blush')">Brands</button>
+</div>
+
+<div class="category-box">
+<img src="{{ url_for('static', filename='images/compact powder.jpg') }}">
+<p>Compact</p>
+<button onclick="openBrandPopup('compact powder')">Brands</button>
+</div>
+
+<div class="category-box">
+<img src="{{ url_for('static', filename='images/lipstick.png') }}">
+<p>Lipstick</p>
+<button onclick="openBrandPopup('lipstick')">Brands</button>
+</div>
+
+</div>
+
+<br>
+
+<!-- FILE UPLOAD -->
+
+<form action="/upload" method="POST" enctype="multipart/form-data" onsubmit="showLoading()">    
+
+<div style="margin-top:20px;">
+
+<input type="file" name="image" required>
+
+<br><br>
+
+<select name="category" style="padding:8px;border-radius:6px;">
+<option value="all">All Categories</option>
+<option value="foundation">Foundation</option>
+<option value="concealer">Concealer</option>
+<option value="blush">Blush</option>
+<option value="compact">Compact</option>
+<option value="lipstick">Lipstick</option>
+</select>
+
+<br><br>
+
+<button type="submit">Analyze</button>
+
+</div>
+
+</form>
+
+
+
+<hr>
+
+
+
+<h2>📷 Camera Capture</h2>
+
+    <video id="video" width="300" height="220" autoplay></video>
+
+    <p id="lightingStatus">Checking lighting...</p>
+
+    <!-- ✅ FIXED FORM -->
+    <form id="cameraForm" method="POST" action="/upload_camera">
+
+        <input type="hidden" name="image_data" id="image_data">
+
+        <br>
+
+        <select name="category" style="padding:8px;border-radius:6px;">
+            <option value="all">All Categories</option>
+            <option value="foundation">Foundation</option>
+            <option value="concealer">Concealer</option>
+            <option value="blush">Blush</option>
+            <option value="compact">Compact</option>
+            <option value="lipstick">Lipstick</option>
+        </select>
+
+        <br><br>
+
+        <button type="button" onclick="capture()">Capture & Analyze</button>
+
+    </form>
+
+</div>
+
+<script>
+    const video = document.getElementById('video');
+    const lightingStatus = document.getElementById('lightingStatus');
+
+    // START CAMERA
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => video.srcObject = stream);
+
+    // ================= LIGHT CHECK =================
+    function checkLighting() {
+        let canvas = document.createElement('canvas');
+        canvas.width = 300;
+        canvas.height = 220;
+
+        let ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+
+        let data = ctx.getImageData(0, 0, 300, 220).data;
+
+        let brightness = 0;
+
+        for (let i = 0; i < data.length; i += 4) {
+            brightness += (0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2]);
+        }
+
+        brightness /= (data.length / 4);
+
+        if (brightness < 80) {
+            lightingStatus.innerHTML = "⚠ Low lighting! Improve lighting";
+            lightingStatus.style.color = "red";
+        } else {
+            lightingStatus.innerHTML = "✅ Good lighting";
+            lightingStatus.style.color = "green";
+        }
+    }
+
+    setInterval(checkLighting, 1000);
+
+    // ================= CAPTURE =================
+    function capture() {
+
+        // 🔥 DO NOT REMOVE (your lighting logic)
+        if (lightingStatus.innerHTML.includes("Low")) {
+            alert("⚠ Improve lighting before capture!");
+            return;
+        }
+
+        let canvas = document.createElement("canvas");
+
+        canvas.width = 300;
+        canvas.height = 220;
+
+        let ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        let dataURL = canvas.toDataURL("image/jpeg");
+
+        // store image
+        document.getElementById("image_data").value = dataURL;
+
+        showLoading();
+
+        // submit form
+        document.getElementById("cameraForm").submit();
+    }
+
+
+    function openBrandPopup(category) {
+
+    fetch(`/get_brands/${category}`)
+        .then(res => res.json())
+        .then(data => {
+
+            let container = document.getElementById("brandContainer");
+            container.innerHTML = "";
+
+            document.getElementById("brandTitle").innerText = category.toUpperCase() + " BRANDS";
+
+            data.brands.forEach(b => {
+                container.innerHTML += `<div class="brand-box">${b}</div>`;
+            });
+
+            document.getElementById("brandPopup").style.display = "block";
+        });
+}
+
+function closeBrandPopup() {
+    document.getElementById("brandPopup").style.display = "none";
+
+
+}
+
+function showLoading() {
+
+    let screen = document.getElementById("loadingScreen");
+    screen.style.display = "block";
+
+    let text = document.querySelector("#loadingScreen p");
+
+    setTimeout(() => {
+        text.innerText = "Detecting skin tone...";
+    }, 800);
+
+    setTimeout(() => {
+        text.innerText = "Matching products...";
+    }, 1600);
+}
+
+</script>
+
+
+
+
+<div id="brandPopup" style="
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.5);
+">
+
+    <div style="
+        background:white;
+        width:60%;
+        margin:80px auto;
+        padding:20px;
+        border-radius:10px;
+        text-align:center;
+    ">
+
+        <h2 id="brandTitle"></h2>
+
+        <div id="brandContainer"></div>
+
+        <br>
+        <button onclick="closeBrandPopup()">Close</button>
+
+    </div>
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

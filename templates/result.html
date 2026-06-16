@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Results</title>
+
+<style>
+
+
+
+
+
+
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to right, #ffd6e0, #ba3a7c);
+    text-align: center;
+}
+
+.container {
+    background: rgb(211, 155, 196)
+    padding: 30px;
+    margin: 40px auto;
+    width: 80%;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.color-box {
+    width: 100px;
+    height: 100px;
+    margin: 20px auto;
+    border-radius: 12px;
+    border: 3px solid #eee;
+}
+
+.products {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.card {
+    background: #ae4a6b;
+    padding: 15px;
+    width: 200px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: auto;
+}
+
+.grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.card {
+    width: 220px;
+    background: rgb(219, 216, 217);
+    padding: 15px;
+    border-radius: 12px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    background: #e52e74;
+}
+
+.category-header {
+    color:#d2cacd
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.category-header img {
+    color:#ac9ba0;
+    width: 40px;
+}
+
+.match {
+    color: #ff4d88;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Your Skin Analysis</h1>
+
+<p>HEX: {{ hex_value }}</p>
+<p>Tone: {{ tone }}</p>
+<p>Undertone: {{ undertone }}</p>
+
+
+
+<div style="
+    width: 100px;px;
+    height:100px;
+    margin:20px auto;
+    background-color: {{ hex_value }};
+    border-radius:10px;
+    border:1px solid #ccc;
+"></div>
+
+<h2>Recommended Products</h2>
+
+{% for category, items in data.items() %}
+
+<div class="category-header">
+
+
+
+
+{% if category == "foundation" %}
+<img class="category-img" src="{{ url_for('static', filename='images/foundation.png') }}">
+{% elif category == "concealer" %}
+<img class="category-img" src="{{ url_for('static', filename='images/concealer.jpeg') }}">
+{% elif category == "blush" %}
+<img class="category-img" src="{{ url_for('static', filename='images/blush.webp') }}">
+{% elif category == "compact" %}
+<img class="category-img" src="{{ url_for('static', filename='images/compact powder.jpg') }}">
+{% elif category == "lipstick" %}
+<img class="category-img" src="{{ url_for('static', filename='images/lipstick.png') }}">
+{% endif %}
+<h3>{{ category.upper() }}</h3>
+
+</div>
+
+<div class="grid">
+
+{% for item in items %}
+<div class="card">
+<h4>{{ item.brand }}</h4>
+<p>{{ item.product }}</p>
+<p>{{ item.shade }}</p>
+<p class="match">Match: {{ item.score }}%</p>
+</div>
+{% endfor %}
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</body>
+</html>
